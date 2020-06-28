@@ -12,8 +12,10 @@ impl Connection {
     pub fn put_copy_data(&self, buffer: &str) -> std::result::Result<(), String> {
         log::debug!("Sending copy data");
 
+        let c_buffer = crate::ffi::to_cstr(buffer);
+
         let success = unsafe {
-            pq_sys::PQputCopyData(self.into(), crate::cstr!(buffer), buffer.len() as i32)
+            pq_sys::PQputCopyData(self.into(), c_buffer.as_ptr(), buffer.len() as i32)
         };
 
         match success {
@@ -35,13 +37,14 @@ impl Connection {
     pub fn put_copy_end(&self, errormsg: Option<&str>) -> std::result::Result<(), String> {
         log::debug!("End of copy");
 
-        let cstr = if let Some(msg) = errormsg {
-            crate::cstr!(msg)
+        let cstr = errormsg.map(crate::ffi::to_cstr);
+        let ptr = if let Some(ref cstr) = cstr {
+            cstr.as_ptr()
         } else {
             std::ptr::null()
         };
 
-        let success = unsafe { pq_sys::PQputCopyEnd(self.into(), cstr) };
+        let success = unsafe { pq_sys::PQputCopyEnd(self.into(), ptr) };
 
         match success {
             -1 => Err(self
