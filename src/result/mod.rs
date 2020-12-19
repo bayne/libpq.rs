@@ -268,15 +268,15 @@ impl Result {
         let c_caption = crate::ffi::to_cstr(&option.caption);
 
         let c_option = pq_sys::_PQprintOpt {
-            header: option.header as i8,
-            align: option.align as i8,
-            standard: option.standard as i8,
-            html3: option.html3 as i8,
-            expanded: option.expanded as i8,
-            pager: option.pager as i8,
-            fieldSep: c_field_sep.as_ptr() as *mut i8,
-            tableOpt: c_table_opt.as_ptr() as *mut i8,
-            caption: c_caption.as_ptr() as *mut i8,
+            header: option.header as libc::c_char,
+            align: option.align as libc::c_char,
+            standard: option.standard as libc::c_char,
+            html3: option.html3 as libc::c_char,
+            expanded: option.expanded as libc::c_char,
+            pager: option.pager as libc::c_char,
+            fieldSep: c_field_sep.as_ptr() as *mut libc::c_char,
+            tableOpt: c_table_opt.as_ptr() as *mut libc::c_char,
+            caption: c_caption.as_ptr() as *mut libc::c_char,
             fieldName: ptr_field_name.as_ptr() as *mut *mut libc::c_char,
         };
 
